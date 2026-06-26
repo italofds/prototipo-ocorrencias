@@ -32,6 +32,7 @@ import StepPessoas from '@/components/steps/StepPessoas.vue'
 import StepObjetos from '@/components/steps/StepObjetos.vue'
 import StepHistorico from '@/components/steps/StepHistorico.vue'
 import StepAnexos from '@/components/steps/StepAnexos.vue'
+import PCDFLogo from '@/img/PCDF.svg'
 
 const STEPS: StepDef[] = [
   { id: 'basicos', title: 'Dados Básicos', description: 'Natureza, data, hora e local da ocorrência' },
@@ -124,9 +125,9 @@ function toggleTheme() {
         <div class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-4">
           <div class="flex items-center gap-3">
             <div
-              class="grid h-10 w-10 place-items-center rounded-lg bg-white/10 text-header-foreground"
+              class="grid h-12 w-12 place-items-center rounded-lg text-header-foreground"
             >
-              <ShieldCheck class="h-5 w-5" />
+              <img :src="PCDFLogo" alt="PCDF" class="h-12 w-12 object-contain" />
             </div>
             <div>
               <h1 class="text-base font-semibold leading-tight">Ocorrências Policiais</h1>
@@ -150,7 +151,7 @@ function toggleTheme() {
         <div
           class="mx-auto flex max-w-[1400px] items-center justify-end gap-2 px-6 py-2.5"
         >
-          <AppButton variant="outline" size="sm" @click="() => window.print()">
+          <AppButton variant="outline" size="sm" @click="">
             <Printer class="h-4 w-4" /> Imprimir
           </AppButton>
           <AppButton
