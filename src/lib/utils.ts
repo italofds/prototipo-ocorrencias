@@ -6,6 +6,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function uid(): string {
+  return Math.random().toString(36).slice(2, 9)
+}
+
 export function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0')
   const s = Math.floor(seconds % 60).toString().padStart(2, '0')
@@ -14,9 +18,14 @@ export function formatTime(seconds: number): string {
 
 export function stepProgress(id: StepId, data: FormState): number {
   if (id === 'basicos') {
-    const fields = Object.values(data.basicos)
-    const filled = fields.filter((v) => v.trim().length > 0).length
-    return filled / fields.length
+    const b = data.basicos
+    const required = [
+      b.tipoOcorrencia, b.classificacao, b.unidadeApuracao,
+      b.flagrante, b.periodoInicio, b.periodoFim, b.motivacao, b.logradouro,
+    ]
+    const filled = required.filter((v) => v.trim().length > 0).length
+    const naturezaOk = b.naturezas.length > 0 && b.naturezas.every((n) => n.nome.trim().length > 0) ? 1 : 0
+    return (filled + naturezaOk) / (required.length + 1)
   }
   if (id === 'pessoas') {
     if (data.pessoas.length === 0) return 0

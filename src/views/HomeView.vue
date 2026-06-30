@@ -19,8 +19,9 @@ import {
   CircleDashed,
   CircleDot,
   UserCheck,
+  Menu,
 } from 'lucide-vue-next'
-import { cn, stepProgress, statusFromProgress, initials } from '@/lib/utils'
+import { cn, stepProgress, statusFromProgress, initials, uid } from '@/lib/utils'
 import type { FormState, StepDef, Participante } from '@/types'
 import AppButton from '@/components/ui/Button.vue'
 import AppProgress from '@/components/ui/Progress.vue'
@@ -60,7 +61,13 @@ const PARTICIPANTES_INICIAIS: Participante[] = [
 
 // ── State ──────────────────────────────────────────────────────────────────────
 const data = reactive<FormState>({
-  basicos: { natureza: '', data: '', hora: '', endereco: '', bairro: '', municipio: '', uf: '' },
+  basicos: {
+    tipoOcorrencia: '', classificacao: '', unidadeRegistro: 'DGI', unidadeApuracao: '',
+    flagrante: '', origemComunicacao: '', dataComunicacao: '', periodoInicio: '', periodoFim: '',
+    motivacao: '', operacaoPolicial: '', nomeOperacao: '', evento: '', nomeEvento: '',
+    pais: 'Brasil', estado: '', cidadeRA: '', quadra: '', logradouro: '', via: '', complemento: '',
+    coordenadas: '', naturezas: [], unidadesMoveis: [], denuncias: [],
+  },
   pessoas: [],
   objetos: [],
   historico: '',
@@ -72,6 +79,7 @@ const homologada = ref(false)
 const homologadoPor = ref<{ nome: string; em: string } | null>(null)
 const theme = ref<'light' | 'dark'>('light')
 const participantes = ref<Participante[]>(PARTICIPANTES_INICIAIS)
+const sidebarOpen = ref(window.innerWidth >= 1024)
 
 watch(
   theme,
@@ -98,13 +106,21 @@ function homologar() {
 }
 
 function handleAutoFill() {
-  if (!data.basicos.natureza) data.basicos.natureza = 'furto'
-  if (!data.basicos.data) data.basicos.data = '2026-06-22'
-  if (!data.basicos.hora) data.basicos.hora = '13:50'
-  if (!data.basicos.endereco) data.basicos.endereco = 'Av. Paulista, 1.500, próximo ao MASP'
-  if (!data.basicos.bairro) data.basicos.bairro = 'Bela Vista'
-  if (!data.basicos.municipio) data.basicos.municipio = 'São Paulo'
-  if (!data.basicos.uf) data.basicos.uf = 'SP'
+  if (!data.basicos.tipoOcorrencia) data.basicos.tipoOcorrencia = 'criminal'
+  if (!data.basicos.classificacao) data.basicos.classificacao = 'comum'
+  if (!data.basicos.unidadeApuracao) data.basicos.unidadeApuracao = 'DGI'
+  if (!data.basicos.flagrante) data.basicos.flagrante = 'nao'
+  if (!data.basicos.origemComunicacao) data.basicos.origemComunicacao = 'telefone190'
+  if (!data.basicos.dataComunicacao) data.basicos.dataComunicacao = '2026-06-22'
+  if (!data.basicos.periodoInicio) data.basicos.periodoInicio = '2026-06-22T13:50'
+  if (!data.basicos.periodoFim) data.basicos.periodoFim = '2026-06-22T14:30'
+  if (!data.basicos.motivacao) data.basicos.motivacao = 'Patrimonial'
+  if (data.basicos.naturezas.length === 0)
+    data.basicos.naturezas.push({ id: uid(), nome: 'Furto', tentadaConsumada: 'consumada' })
+  if (!data.basicos.logradouro) data.basicos.logradouro = 'Av. Paulista, 1.500'
+  if (!data.basicos.complemento) data.basicos.complemento = 'Próximo ao MASP'
+  if (!data.basicos.cidadeRA) data.basicos.cidadeRA = 'São Paulo'
+  if (!data.basicos.estado) data.basicos.estado = 'SP'
   if (!data.historico)
     data.historico =
       'Transcrição automática do áudio: a vítima relatou que, por volta das 13h50, ao caminhar pela Av. Paulista, teve seu aparelho celular subtraído por indivíduo em motocicleta, que evadiu-se sentido Consolação. Não houve agressão física. Foram acionadas viaturas para diligências na região.'
@@ -113,17 +129,35 @@ function handleAutoFill() {
 function toggleTheme() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
 }
+
+function toggleSidebar() {
+  sidebarOpen.value = !sidebarOpen.value
+}
 </script>
 
 <template>
   <div class="min-h-screen bg-background lg:flex">
-    <AppSidebar />
+    <!-- Espaçador de layout (desktop): empurra o conteúdo em sincronia com a animação do sidebar -->
+    <div
+      class="hidden shrink-0 lg:block lg:transition-[width] lg:duration-300 lg:ease-in-out"
+      :class="sidebarOpen ? 'lg:w-64' : 'lg:w-0'"
+      aria-hidden="true"
+    />
+    <AppSidebar :is-open="sidebarOpen" @close="sidebarOpen = false" />
 
     <div class="min-w-0 flex-1">
       <!-- Header -->
       <header class="bg-header text-header-foreground">
         <div class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-4">
           <div class="flex items-center gap-3">
+            <button
+              type="button"
+              @click="toggleSidebar"
+              aria-label="Alternar menu lateral"
+              class="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-white/10 text-header-foreground transition-colors hover:bg-white/20"
+            >
+              <Menu class="h-5 w-5" />
+            </button>
             <div
               class="grid h-12 w-12 place-items-center rounded-lg text-header-foreground"
             >

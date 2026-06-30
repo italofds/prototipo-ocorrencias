@@ -7,6 +7,29 @@ export interface StepDef {
   description: string
 }
 
+export interface Natureza {
+  id: string
+  nome: string
+  tentadaConsumada: string
+}
+
+export interface UnidadeMovel {
+  id: string
+  orgao: string
+  unidade: string
+  prefixoViatura: string
+  matricula: string
+  nome: string
+  numOcorrencia: string
+}
+
+export interface DenunciaVinculada {
+  id: string
+  numero: string
+  ano: string
+  orgaoGerador: string
+}
+
 export interface Pessoa {
   id: string
   nome: string
@@ -29,13 +52,31 @@ export interface Anexo {
 
 export interface FormState {
   basicos: {
-    natureza: string
-    data: string
-    hora: string
-    endereco: string
-    bairro: string
-    municipio: string
-    uf: string
+    tipoOcorrencia: string
+    classificacao: string
+    unidadeRegistro: string
+    unidadeApuracao: string
+    flagrante: string
+    origemComunicacao: string
+    dataComunicacao: string
+    periodoInicio: string
+    periodoFim: string
+    motivacao: string
+    operacaoPolicial: string
+    nomeOperacao: string
+    evento: string
+    nomeEvento: string
+    pais: string
+    estado: string
+    cidadeRA: string
+    quadra: string
+    logradouro: string
+    via: string
+    complemento: string
+    coordenadas: string
+    naturezas: Natureza[]
+    unidadesMoveis: UnidadeMovel[]
+    denuncias: DenunciaVinculada[]
   }
   pessoas: Pessoa[]
   objetos: Objeto[]
