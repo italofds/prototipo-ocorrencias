@@ -10,7 +10,7 @@ export interface StepDef {
 export interface Natureza {
   id: string
   nome: string
-  tentadaConsumada: string
+  tentada: boolean
 }
 
 export interface UnidadeMovel {

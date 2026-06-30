@@ -21,7 +21,7 @@ import {
   UserCheck,
   Menu,
 } from 'lucide-vue-next'
-import { cn, stepProgress, statusFromProgress, initials, uid } from '@/lib/utils'
+import { cn, stepProgress, statusFromProgress, initials, uid, nowDateTimeLocal } from '@/lib/utils'
 import type { FormState, StepDef, Participante } from '@/types'
 import AppButton from '@/components/ui/Button.vue'
 import AppProgress from '@/components/ui/Progress.vue'
@@ -36,7 +36,7 @@ import StepAnexos from '@/components/steps/StepAnexos.vue'
 import PCDFLogo from '@/img/PCDF.svg'
 
 const STEPS: StepDef[] = [
-  { id: 'basicos', title: 'Dados Básicos', description: 'Natureza, data, hora e local da ocorrência' },
+  { id: 'basicos', title: 'Dados Básicos', description: 'Natureza, data, hora, local da ocorrência e outros' },
   { id: 'pessoas', title: 'Pessoas Envolvidas', description: 'Vítimas, autores, testemunhas e comunicantes' },
   { id: 'objetos', title: 'Objetos / Veículos', description: 'Bens, armas e veículos relacionados' },
   { id: 'historico', title: 'Histórico', description: 'Narrativa detalhada dos fatos' },
@@ -46,8 +46,8 @@ const STEPS: StepDef[] = [
 const STEP_ICONS = [ClipboardList, Users, Car, ScrollText, Paperclip]
 
 const OCCURRENCE_INFO = {
-  numero: '2026.0006148',
-  protocolo: 'PRT-2026-0099421',
+  numero: '123456/2026',
+  protocolo: '12346789/2026',
   abertura: '22/06/2026 14:32',
 }
 
@@ -62,8 +62,8 @@ const PARTICIPANTES_INICIAIS: Participante[] = [
 // ── State ──────────────────────────────────────────────────────────────────────
 const data = reactive<FormState>({
   basicos: {
-    tipoOcorrencia: '', classificacao: '', unidadeRegistro: 'DGI', unidadeApuracao: '',
-    flagrante: '', origemComunicacao: '', dataComunicacao: '', periodoInicio: '', periodoFim: '',
+    tipoOcorrencia: '', classificacao: 'comum', unidadeRegistro: 'DGI', unidadeApuracao: '',
+    flagrante: '', origemComunicacao: '', dataComunicacao: nowDateTimeLocal(), periodoInicio: '', periodoFim: '',
     motivacao: '', operacaoPolicial: '', nomeOperacao: '', evento: '', nomeEvento: '',
     pais: 'Brasil', estado: '', cidadeRA: '', quadra: '', logradouro: '', via: '', complemento: '',
     coordenadas: '', naturezas: [], unidadesMoveis: [], denuncias: [],
@@ -111,12 +111,12 @@ function handleAutoFill() {
   if (!data.basicos.unidadeApuracao) data.basicos.unidadeApuracao = 'DGI'
   if (!data.basicos.flagrante) data.basicos.flagrante = 'nao'
   if (!data.basicos.origemComunicacao) data.basicos.origemComunicacao = 'telefone190'
-  if (!data.basicos.dataComunicacao) data.basicos.dataComunicacao = '2026-06-22'
   if (!data.basicos.periodoInicio) data.basicos.periodoInicio = '2026-06-22T13:50'
   if (!data.basicos.periodoFim) data.basicos.periodoFim = '2026-06-22T14:30'
-  if (!data.basicos.motivacao) data.basicos.motivacao = 'Patrimonial'
+  if (data.basicos.tipoOcorrencia === 'administrativa' && !data.basicos.motivacao)
+    data.basicos.motivacao = 'Patrimonial'
   if (data.basicos.naturezas.length === 0)
-    data.basicos.naturezas.push({ id: uid(), nome: 'Furto', tentadaConsumada: 'consumada' })
+    data.basicos.naturezas.push({ id: uid(), nome: 'Furto', tentada: false })
   if (!data.basicos.logradouro) data.basicos.logradouro = 'Av. Paulista, 1.500'
   if (!data.basicos.complemento) data.basicos.complemento = 'Próximo ao MASP'
   if (!data.basicos.cidadeRA) data.basicos.cidadeRA = 'São Paulo'
@@ -147,7 +147,7 @@ function toggleSidebar() {
 
     <div class="min-w-0 flex-1">
       <!-- Header -->
-      <header class="bg-header text-header-foreground">
+      <header class="sticky top-0 z-30 bg-header text-header-foreground">
         <div class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-4">
           <div class="flex items-center gap-3">
             <button
@@ -201,9 +201,9 @@ function toggleSidebar() {
       </div>
 
       <!-- Info bar -->
-      <div class="border-b bg-muted/40">
+      <div class="border-b bg-muted/40 lg:sticky lg:top-20 lg:z-20 lg:bg-card">
         <div
-          class="mx-auto grid max-w-[1400px] grid-cols-1 gap-x-6 gap-y-3 px-6 py-4 sm:grid-cols-3"
+          class="mx-auto grid max-w-[1400px] grid-cols-2 gap-x-6 gap-y-3 px-6 py-4 sm:grid-cols-4"
         >
           <div class="flex items-start gap-2">
             <Hash class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
@@ -219,6 +219,13 @@ function toggleSidebar() {
               <p class="truncate text-sm font-semibold">{{ OCCURRENCE_INFO.protocolo }}</p>
             </div>
           </div>
+          <div class="flex items-start gap-2">
+            <ShieldCheck class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+            <div class="min-w-0">
+              <p class="text-[11px] uppercase tracking-wide text-muted-foreground">Unidade de Registro</p>
+              <p class="truncate text-sm font-semibold">{{ data.basicos.unidadeRegistro }}</p>
+            </div>
+          </div>          
           <div class="flex items-start gap-2">
             <Calendar class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div class="min-w-0">
@@ -299,13 +306,6 @@ function toggleSidebar() {
                 </button>
               </li>
             </ol>
-
-            <div class="mt-5 grid grid-cols-3 gap-2 border-t pt-4">
-              <div v-for="leg in [{ dot: 'bg-border', label: 'Pendente' }, { dot: 'bg-partial', label: 'Parcial' }, { dot: 'bg-complete', label: 'Completo' }]" :key="leg.label" class="flex items-center gap-2">
-                <span :class="cn('h-2 w-2 rounded-full', leg.dot)" />
-                <span class="text-xs text-muted-foreground">{{ leg.label }}</span>
-              </div>
-            </div>
 
             <div
               :class="
