@@ -23,39 +23,39 @@ export function nowDateTimeLocal(): string {
 }
 
 export function stepProgress(id: StepId, data: FormState): number {
-  if (id === 'basicos') {
-    const b = data.basicos
+  if (id === 'basics') {
+    const b = data.basics
     const required = [
-      b.tipoOcorrencia, b.classificacao, b.unidadeApuracao,
-      b.flagrante, b.periodoInicio, b.periodoFim, b.logradouro,
+      b.occurrenceType, b.classification, b.investigationUnit,
+      b.inFlagrante, b.periodStart, b.periodEnd, b.street,
     ]
-    if (b.tipoOcorrencia === 'administrativa') required.push(b.motivacao)
+    if (b.occurrenceType === 'administrativa') required.push(b.motivation)
     const filled = required.filter((v) => v.trim().length > 0).length
-    const naturezaOk = b.naturezas.length > 0 && b.naturezas.every((n) => n.nome.trim().length > 0) ? 1 : 0
-    return (filled + naturezaOk) / (required.length + 1)
+    const natureOk = b.natures.length > 0 && b.natures.every((n) => n.name.trim().length > 0) ? 1 : 0
+    return (filled + natureOk) / (required.length + 1)
   }
-  if (id === 'pessoas') {
-    if (data.pessoas.length === 0) return 0
-    const total = data.pessoas.length * 3
-    const filled = data.pessoas.reduce(
-      (acc, p) => acc + [p.nome, p.tipo, p.documento].filter((v) => v.trim().length > 0).length,
+  if (id === 'people') {
+    if (data.people.length === 0) return 0
+    const total = data.people.length * 3
+    const filled = data.people.reduce(
+      (acc, p) => acc + [p.name, p.type, p.document].filter((v) => v.trim().length > 0).length,
       0,
     )
     return filled / total
   }
-  if (id === 'objetos') {
-    if (data.objetos.length === 0) return 0
-    const total = data.objetos.length * 2
-    const filled = data.objetos.reduce(
-      (acc, o) => acc + [o.categoria, o.descricao].filter((v) => v.trim().length > 0).length,
+  if (id === 'items') {
+    if (data.items.length === 0) return 0
+    const total = data.items.length * 2
+    const filled = data.items.reduce(
+      (acc, o) => acc + [o.category, o.description].filter((v) => v.trim().length > 0).length,
       0,
     )
     return filled / total
   }
-  if (id === 'historico') {
-    return data.historico.trim().length >= 30 ? 1 : data.historico.trim().length > 0 ? 0.5 : 0
+  if (id === 'history') {
+    return data.history.trim().length >= 30 ? 1 : data.history.trim().length > 0 ? 0.5 : 0
   }
-  return data.anexos.length > 0 ? 1 : 0
+  return data.attachments.length > 0 ? 1 : 0
 }
 
 export function statusFromProgress(p: number): Status {
@@ -64,8 +64,8 @@ export function statusFromProgress(p: number): Status {
   return 'partial'
 }
 
-export function initials(nome: string): string {
-  return nome
+export function initials(name: string): string {
+  return name
     .split(' ')
     .slice(-2)
     .map((n) => n[0])

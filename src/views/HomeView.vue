@@ -22,63 +22,63 @@ import {
   Menu,
 } from 'lucide-vue-next'
 import { cn, stepProgress, statusFromProgress, initials, uid, nowDateTimeLocal } from '@/lib/utils'
-import type { FormState, StepDef, Participante } from '@/types'
+import type { FormState, StepDef, Participant } from '@/types'
 import AppButton from '@/components/ui/Button.vue'
 import AppProgress from '@/components/ui/Progress.vue'
 import AppSidebar from '@/components/AppSidebar.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
-import StepBasicos from '@/components/steps/StepBasicos.vue'
-import StepPessoas from '@/components/steps/StepPessoas.vue'
-import StepObjetos from '@/components/steps/StepObjetos.vue'
-import StepHistorico from '@/components/steps/StepHistorico.vue'
-import StepAnexos from '@/components/steps/StepAnexos.vue'
+import StepBasics from '@/components/steps/StepBasics.vue'
+import StepPeople from '@/components/steps/StepPeople.vue'
+import StepObjects from '@/components/steps/StepObjects.vue'
+import StepHistory from '@/components/steps/StepHistory.vue'
+import StepAttachments from '@/components/steps/StepAttachments.vue'
 import PCDFLogo from '@/img/PCDF.svg'
 
 const STEPS: StepDef[] = [
-  { id: 'basicos', title: 'Dados Básicos', description: 'Natureza, data, hora, local da ocorrência e outros' },
-  { id: 'pessoas', title: 'Pessoas Envolvidas', description: 'Vítimas, autores, testemunhas e comunicantes' },
-  { id: 'objetos', title: 'Objetos / Veículos', description: 'Bens, armas e veículos relacionados' },
-  { id: 'historico', title: 'Histórico', description: 'Narrativa detalhada dos fatos' },
-  { id: 'anexos', title: 'Anexos', description: 'Documentos, fotos e laudos' },
+  { id: 'basics', title: 'Dados Básicos', description: 'Natureza, data, hora, local da ocorrência e outros' },
+  { id: 'people', title: 'Pessoas Envolvidas', description: 'Vítimas, autores, testemunhas e comunicantes' },
+  { id: 'items', title: 'Objetos / Veículos', description: 'Bens, armas e veículos relacionados' },
+  { id: 'history', title: 'Histórico', description: 'Narrativa detalhada dos fatos' },
+  { id: 'attachments', title: 'Anexos', description: 'Documentos, fotos e laudos' },
 ]
 
 const STEP_ICONS = [ClipboardList, Users, Car, ScrollText, Paperclip]
 
 const OCCURRENCE_INFO = {
-  numero: '123456/2026',
-  protocolo: '12346789/2026',
-  abertura: '22/06/2026 14:32',
+  number: '123456/2026',
+  protocol: '12346789/2026',
+  openedAt: '22/06/2026 14:32',
 }
 
 const STATUS_LABEL = { pending: 'Pendente', partial: 'Parcial', complete: 'Completo' }
 
-const PARTICIPANTES_INICIAIS: Participante[] = [
-  { id: 'p1', nome: 'Inv. Carla Mendes', papel: 'Atendente — abertura', em: '14:32' },
-  { id: 'p2', nome: 'Esc. Rafael Lima', papel: 'Edição — Dados básicos', em: '14:41' },
-  { id: 'p3', nome: 'Inv. Carla Mendes', papel: 'Edição — Histórico', em: '15:02' },
+const INITIAL_PARTICIPANTS: Participant[] = [
+  { id: 'p1', name: 'Inv. Carla Mendes', role: 'Atendente — abertura', at: '14:32' },
+  { id: 'p2', name: 'Esc. Rafael Lima', role: 'Edição — Dados básicos', at: '14:41' },
+  { id: 'p3', name: 'Inv. Carla Mendes', role: 'Edição — Histórico', at: '15:02' },
 ]
 
 // ── State ──────────────────────────────────────────────────────────────────────
 const data = reactive<FormState>({
-  basicos: {
-    tipoOcorrencia: '', classificacao: 'comum', unidadeRegistro: 'DGI', unidadeApuracao: '',
-    flagrante: '', origemComunicacao: '', dataComunicacao: nowDateTimeLocal(), periodoInicio: '', periodoFim: '',
-    motivacao: '', operacaoPolicial: '', nomeOperacao: '', evento: '', nomeEvento: '',
-    pais: 'Brasil', estado: '', cidadeRA: '', quadra: '', logradouro: '', via: '', complemento: '',
-    coordenadas: '', naturezas: [], unidadesMoveis: [], denuncias: [],
+  basics: {
+    occurrenceType: '', classification: 'comum', registrationUnit: 'DGI', investigationUnit: '',
+    inFlagrante: '', reportSource: '', reportDate: nowDateTimeLocal(), periodStart: '', periodEnd: '',
+    motivation: '', policeOperation: '', operationName: '', event: '', eventName: '',
+    country: 'Brasil', state: '', cityDistrict: '', block: '', street: '', streetNumber: '', complement: '',
+    coordinates: '', natures: [], mobileUnits: [], linkedReports: [],
   },
-  pessoas: [],
-  objetos: [],
-  historico: '',
-  anexos: [],
+  people: [],
+  items: [],
+  history: '',
+  attachments: [],
 })
 
 const activeIdx = ref(0)
-const homologada = ref(false)
-const homologadoPor = ref<{ nome: string; em: string } | null>(null)
+const approved = ref(false)
+const approvedBy = ref<{ name: string; at: string } | null>(null)
 const theme = ref<'light' | 'dark'>('light')
-const participantes = ref<Participante[]>(PARTICIPANTES_INICIAIS)
+const participants = ref<Participant[]>(INITIAL_PARTICIPANTS)
 const sidebarOpen = ref(window.innerWidth >= 1024)
 
 watch(
@@ -94,35 +94,35 @@ const overall = computed(() =>
   Math.round((progresses.value.reduce((a, b) => a + b, 0) / STEPS.length) * 100),
 )
 const active = computed(() => STEPS[activeIdx.value])
-const canHomologate = computed(() => statuses.value.every((s) => s === 'complete') && !homologada.value)
+const canApprove = computed(() => statuses.value.every((s) => s === 'complete') && !approved.value)
 
 // ── Actions ────────────────────────────────────────────────────────────────────
-function homologar() {
-  homologada.value = true
-  homologadoPor.value = {
-    nome: 'Del. Marcos Pereira',
-    em: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+function approve() {
+  approved.value = true
+  approvedBy.value = {
+    name: 'Del. Marcos Pereira',
+    at: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
   }
 }
 
 function handleAutoFill() {
-  if (!data.basicos.tipoOcorrencia) data.basicos.tipoOcorrencia = 'criminal'
-  if (!data.basicos.classificacao) data.basicos.classificacao = 'comum'
-  if (!data.basicos.unidadeApuracao) data.basicos.unidadeApuracao = 'DGI'
-  if (!data.basicos.flagrante) data.basicos.flagrante = 'nao'
-  if (!data.basicos.origemComunicacao) data.basicos.origemComunicacao = 'telefone190'
-  if (!data.basicos.periodoInicio) data.basicos.periodoInicio = '2026-06-22T13:50'
-  if (!data.basicos.periodoFim) data.basicos.periodoFim = '2026-06-22T14:30'
-  if (data.basicos.tipoOcorrencia === 'administrativa' && !data.basicos.motivacao)
-    data.basicos.motivacao = 'Patrimonial'
-  if (data.basicos.naturezas.length === 0)
-    data.basicos.naturezas.push({ id: uid(), nome: 'Furto', tentada: false })
-  if (!data.basicos.logradouro) data.basicos.logradouro = 'Av. Paulista, 1.500'
-  if (!data.basicos.complemento) data.basicos.complemento = 'Próximo ao MASP'
-  if (!data.basicos.cidadeRA) data.basicos.cidadeRA = 'São Paulo'
-  if (!data.basicos.estado) data.basicos.estado = 'SP'
-  if (!data.historico)
-    data.historico =
+  if (!data.basics.occurrenceType) data.basics.occurrenceType = 'criminal'
+  if (!data.basics.classification) data.basics.classification = 'comum'
+  if (!data.basics.investigationUnit) data.basics.investigationUnit = 'DGI'
+  if (!data.basics.inFlagrante) data.basics.inFlagrante = 'nao'
+  if (!data.basics.reportSource) data.basics.reportSource = 'telefone190'
+  if (!data.basics.periodStart) data.basics.periodStart = '2026-06-22T13:50'
+  if (!data.basics.periodEnd) data.basics.periodEnd = '2026-06-22T14:30'
+  if (data.basics.occurrenceType === 'administrativa' && !data.basics.motivation)
+    data.basics.motivation = 'Patrimonial'
+  if (data.basics.natures.length === 0)
+    data.basics.natures.push({ id: uid(), name: 'Furto', attempted: false })
+  if (!data.basics.street) data.basics.street = 'Av. Paulista, 1.500'
+  if (!data.basics.complement) data.basics.complement = 'Próximo ao MASP'
+  if (!data.basics.cityDistrict) data.basics.cityDistrict = 'São Paulo'
+  if (!data.basics.state) data.basics.state = 'SP'
+  if (!data.history)
+    data.history =
       'Transcrição automática do áudio: a vítima relatou que, por volta das 13h50, ao caminhar pela Av. Paulista, teve seu aparelho celular subtraído por indivíduo em motocicleta, que evadiu-se sentido Consolação. Não houve agressão física. Foram acionadas viaturas para diligências na região.'
 }
 
@@ -190,12 +190,12 @@ function toggleSidebar() {
           </AppButton>
           <AppButton
             size="sm"
-            :disabled="!canHomologate"
-            @click="homologar"
-            :class="cn(homologada && 'bg-complete hover:bg-complete/90')"
+            :disabled="!canApprove"
+            @click="approve"
+            :class="cn(approved && 'bg-complete hover:bg-complete/90')"
           >
             <ShieldCheck class="h-4 w-4" />
-            {{ homologada ? 'Ocorrência homologada' : 'Homologar' }}
+            {{ approved ? 'Ocorrência homologada' : 'Homologar' }}
           </AppButton>
         </div>
       </div>
@@ -209,28 +209,28 @@ function toggleSidebar() {
             <Hash class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div class="min-w-0">
               <p class="text-[11px] uppercase tracking-wide text-muted-foreground">Nº Ocorrência</p>
-              <p class="truncate text-sm font-semibold">{{ OCCURRENCE_INFO.numero }}</p>
+              <p class="truncate text-sm font-semibold">{{ OCCURRENCE_INFO.number }}</p>
             </div>
           </div>
           <div class="flex items-start gap-2">
             <ClipboardList class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div class="min-w-0">
               <p class="text-[11px] uppercase tracking-wide text-muted-foreground">Protocolo</p>
-              <p class="truncate text-sm font-semibold">{{ OCCURRENCE_INFO.protocolo }}</p>
+              <p class="truncate text-sm font-semibold">{{ OCCURRENCE_INFO.protocol }}</p>
             </div>
           </div>
           <div class="flex items-start gap-2">
             <ShieldCheck class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div class="min-w-0">
               <p class="text-[11px] uppercase tracking-wide text-muted-foreground">Unidade de Registro</p>
-              <p class="truncate text-sm font-semibold">{{ data.basicos.unidadeRegistro }}</p>
+              <p class="truncate text-sm font-semibold">{{ data.basics.registrationUnit }}</p>
             </div>
-          </div>          
+          </div>
           <div class="flex items-start gap-2">
             <Calendar class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div class="min-w-0">
               <p class="text-[11px] uppercase tracking-wide text-muted-foreground">Abertura</p>
-              <p class="truncate text-sm font-semibold">{{ OCCURRENCE_INFO.abertura }}</p>
+              <p class="truncate text-sm font-semibold">{{ OCCURRENCE_INFO.openedAt }}</p>
             </div>
           </div>
         </div>
@@ -311,7 +311,7 @@ function toggleSidebar() {
               :class="
                 cn(
                   'mt-5 rounded-lg border p-3 text-xs',
-                  homologada
+                  approved
                     ? 'border-complete/40 bg-complete-soft text-complete'
                     : 'border-dashed text-muted-foreground',
                 )
@@ -319,11 +319,11 @@ function toggleSidebar() {
             >
               <div class="flex items-center gap-2 font-medium">
                 <ShieldCheck class="h-4 w-4" />
-                {{ homologada ? 'Ocorrência homologada' : 'Aguardando homologação' }}
+                {{ approved ? 'Ocorrência homologada' : 'Aguardando homologação' }}
               </div>
               <p class="mt-1 leading-relaxed">
-                <template v-if="homologada && homologadoPor">
-                  Homologada por {{ homologadoPor.nome }} às {{ homologadoPor.em }}.
+                <template v-if="approved && approvedBy">
+                  Homologada por {{ approvedBy.name }} às {{ approvedBy.at }}.
                 </template>
                 <template v-else>
                   Conclua todas as etapas para liberar a homologação.
@@ -339,21 +339,21 @@ function toggleSidebar() {
               <h2 class="text-sm font-semibold">Participantes do registro</h2>
             </div>
             <ul class="space-y-2.5">
-              <li v-for="p in participantes" :key="p.id" class="flex items-start gap-3">
+              <li v-for="p in participants" :key="p.id" class="flex items-start gap-3">
                 <div
                   class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-xs font-semibold text-muted-foreground"
                 >
-                  {{ initials(p.nome) }}
+                  {{ initials(p.name) }}
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="truncate text-sm font-medium">{{ p.nome }}</p>
-                  <p class="truncate text-xs text-muted-foreground">{{ p.papel }}</p>
+                  <p class="truncate text-sm font-medium">{{ p.name }}</p>
+                  <p class="truncate text-xs text-muted-foreground">{{ p.role }}</p>
                 </div>
-                <span class="text-xs text-muted-foreground">{{ p.em }}</span>
+                <span class="text-xs text-muted-foreground">{{ p.at }}</span>
               </li>
 
               <li
-                v-if="homologada && homologadoPor"
+                v-if="approved && approvedBy"
                 class="flex items-start gap-3 rounded-md border border-complete/30 bg-complete-soft/60 p-2"
               >
                 <div
@@ -362,10 +362,10 @@ function toggleSidebar() {
                   <ShieldCheck class="h-4 w-4" />
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="truncate text-sm font-medium">{{ homologadoPor.nome }}</p>
+                  <p class="truncate text-sm font-medium">{{ approvedBy.name }}</p>
                   <p class="truncate text-xs text-complete">Homologação</p>
                 </div>
-                <span class="text-xs text-complete">{{ homologadoPor.em }}</span>
+                <span class="text-xs text-complete">{{ approvedBy.at }}</span>
               </li>
             </ul>
           </div>
@@ -388,11 +388,11 @@ function toggleSidebar() {
             </div>
 
             <div class="p-6">
-              <StepBasicos v-if="active.id === 'basicos'" v-model="data.basicos" />
-              <StepPessoas v-else-if="active.id === 'pessoas'" v-model="data.pessoas" />
-              <StepObjetos v-else-if="active.id === 'objetos'" v-model="data.objetos" />
-              <StepHistorico v-else-if="active.id === 'historico'" v-model="data.historico" />
-              <StepAnexos v-else-if="active.id === 'anexos'" v-model="data.anexos" />
+              <StepBasics v-if="active.id === 'basics'" v-model="data.basics" />
+              <StepPeople v-else-if="active.id === 'people'" v-model="data.people" />
+              <StepObjects v-else-if="active.id === 'items'" v-model="data.items" />
+              <StepHistory v-else-if="active.id === 'history'" v-model="data.history" />
+              <StepAttachments v-else-if="active.id === 'attachments'" v-model="data.attachments" />
             </div>
 
             <div
@@ -415,7 +415,7 @@ function toggleSidebar() {
                 >
                   Próxima etapa <ChevronRight class="h-4 w-4" />
                 </AppButton>
-                <AppButton v-else :disabled="!canHomologate" @click="homologar">
+                <AppButton v-else :disabled="!canApprove" @click="approve">
                   <ShieldCheck class="h-4 w-4" /> Homologar
                 </AppButton>
               </div>

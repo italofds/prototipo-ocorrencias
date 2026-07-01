@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Plus, X, MapPin } from 'lucide-vue-next'
-import type { FormState, Natureza, UnidadeMovel, DenunciaVinculada } from '@/types'
+import type { FormState, Nature, MobileUnit, LinkedReport } from '@/types'
 import { uid } from '@/lib/utils'
 import AppInput from '@/components/ui/Input.vue'
 import AppSelect from '@/components/ui/Select.vue'
@@ -9,65 +9,65 @@ import AppButton from '@/components/ui/Button.vue'
 import AppRadioGroup from '@/components/ui/RadioGroup.vue'
 import AppCheckbox from '@/components/ui/Checkbox.vue'
 
-const basicos = defineModel<FormState['basicos']>({ required: true })
+const basics = defineModel<FormState['basics']>({ required: true })
 
-const ESTADOS_BR = [
+const BRAZIL_STATES = [
   'AC','AL','AP','AM','BA','CE','DF','ES','GO',
   'MA','MT','MS','MG','PA','PB','PR','PE','PI',
   'RJ','RN','RS','RO','RR','SC','SP','SE','TO',
 ]
 
-const TIPO_OCORRENCIA_OPTIONS = [
+const OCCURRENCE_TYPE_OPTIONS = [
   { value: 'criminal', label: 'Criminal' },
   { value: 'administrativa', label: 'Administrativa' },
 ]
 
-const CLASSIFICACAO_OPTIONS = [
+const CLASSIFICATION_OPTIONS = [
   { value: 'comum', label: 'Comum' },
   { value: 'destaque', label: 'Destaque' },
   { value: 'reservada', label: 'Reservada' },
 ]
 
-const FLAGRANTE_OPTIONS = [
+const IN_FLAGRANTE_OPTIONS = [
   { value: 'sim', label: 'Sim' },
   { value: 'nao', label: 'Não' },
 ]
 
-const UNIDADES_APURACAO = [
+const INVESTIGATION_UNITS = [
   'DGI', 'DCA', 'DCCP', 'DEAM', 'DECCAFE', 'DHPP', 'DPCA', 'DRACO', 'DRF', 'DRFV',
 ]
 
-const MOTIVACOES = [
+const MOTIVATIONS = [
   'Patrimonial', 'Passional', 'Vingança', 'Disputa por território / tráfico',
   'Violência doméstica', 'Embriaguez / uso de drogas', 'Não identificada', 'Outros',
 ]
 
-function verNoMapa() {
-  if (!basicos.value.coordenadas) return
-  window.open(`https://www.google.com/maps?q=${encodeURIComponent(basicos.value.coordenadas)}`, '_blank')
+function viewOnMap() {
+  if (!basics.value.coordinates) return
+  window.open(`https://www.google.com/maps?q=${encodeURIComponent(basics.value.coordinates)}`, '_blank')
 }
 
-function addNatureza() {
-  basicos.value.naturezas.push({ id: uid(), nome: '', tentada: false })
+function addNature() {
+  basics.value.natures.push({ id: uid(), name: '', attempted: false })
 }
-function removeNatureza(id: string) {
-  basicos.value.naturezas = basicos.value.naturezas.filter((n) => n.id !== id)
+function removeNature(id: string) {
+  basics.value.natures = basics.value.natures.filter((n) => n.id !== id)
 }
 
-function addUnidadeMovel() {
-  basicos.value.unidadesMoveis.push({
-    id: uid(), orgao: '', unidade: '', prefixoViatura: '', matricula: '', nome: '', numOcorrencia: '',
+function addMobileUnit() {
+  basics.value.mobileUnits.push({
+    id: uid(), agency: '', unit: '', vehiclePrefix: '', badgeNumber: '', name: '', occurrenceNumber: '',
   })
 }
-function removeUnidadeMovel(id: string) {
-  basicos.value.unidadesMoveis = basicos.value.unidadesMoveis.filter((u) => u.id !== id)
+function removeMobileUnit(id: string) {
+  basics.value.mobileUnits = basics.value.mobileUnits.filter((u) => u.id !== id)
 }
 
-function addDenuncia() {
-  basicos.value.denuncias.push({ id: uid(), numero: '', ano: '', orgaoGerador: '' })
+function addLinkedReport() {
+  basics.value.linkedReports.push({ id: uid(), number: '', year: '', issuingAgency: '' })
 }
-function removeDenuncia(id: string) {
-  basicos.value.denuncias = basicos.value.denuncias.filter((d) => d.id !== id)
+function removeLinkedReport(id: string) {
+  basics.value.linkedReports = basics.value.linkedReports.filter((d) => d.id !== id)
 }
 </script>
 
@@ -85,14 +85,14 @@ function removeDenuncia(id: string) {
         </p>
       </div>
       <AppRadioGroup
-        v-model="basicos.tipoOcorrencia"
-        name="tipoOcorrencia"
-        :options="TIPO_OCORRENCIA_OPTIONS"
+        v-model="basics.occurrenceType"
+        name="occurrenceType"
+        :options="OCCURRENCE_TYPE_OPTIONS"
         full-width
       />
     </section>
 
-    <template v-if="basicos.tipoOcorrencia">
+    <template v-if="basics.occurrenceType">
       <!-- ── DADOS DA OCORRÊNCIA ───────────────────────────────── -->
       <section class="space-y-4">
         <p class="border-b border-border pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -102,19 +102,19 @@ function removeDenuncia(id: string) {
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="space-y-1.5 sm:col-span-2">
             <AppLabel class="text-xs text-muted-foreground">Classificação <span class="text-destructive">*</span></AppLabel>
-            <AppRadioGroup v-model="basicos.classificacao" name="classificacao" :options="CLASSIFICACAO_OPTIONS" />
+            <AppRadioGroup v-model="basics.classification" name="classification" :options="CLASSIFICATION_OPTIONS" />
           </div>
 
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Unidade de Apuração <span class="text-destructive">*</span></AppLabel>
-            <AppSelect v-model="basicos.unidadeApuracao" placeholder="Selecione">
-              <option v-for="u in UNIDADES_APURACAO" :key="u" :value="u">{{ u }}</option>
+            <AppSelect v-model="basics.investigationUnit" placeholder="Selecione">
+              <option v-for="u in INVESTIGATION_UNITS" :key="u" :value="u">{{ u }}</option>
             </AppSelect>
           </div>
 
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Origem da Comunicação</AppLabel>
-            <AppSelect v-model="basicos.origemComunicacao" placeholder="Selecione">
+            <AppSelect v-model="basics.reportSource" placeholder="Selecione">
               <option value="telefone190">Telefone (190)</option>
               <option value="presencial">Presencial</option>
               <option value="internet">Internet / SINESP Cidadão</option>
@@ -126,50 +126,50 @@ function removeDenuncia(id: string) {
 
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Data da Comunicação</AppLabel>
-            <AppInput type="datetime-local" v-model="basicos.dataComunicacao" />
+            <AppInput type="datetime-local" v-model="basics.reportDate" />
           </div>
 
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Período do Fato — Início <span class="text-destructive">*</span></AppLabel>
-            <AppInput type="datetime-local" v-model="basicos.periodoInicio" />
+            <AppInput type="datetime-local" v-model="basics.periodStart" />
           </div>
 
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Período do Fato — Fim <span class="text-destructive">*</span></AppLabel>
-            <AppInput type="datetime-local" v-model="basicos.periodoFim" />
+            <AppInput type="datetime-local" v-model="basics.periodEnd" />
           </div>
 
-          <div v-if="basicos.tipoOcorrencia === 'administrativa'" class="space-y-1.5">
+          <div v-if="basics.occurrenceType === 'administrativa'" class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Motivação <span class="text-destructive">*</span></AppLabel>
-            <AppSelect v-model="basicos.motivacao" placeholder="Selecione">
-              <option v-for="m in MOTIVACOES" :key="m" :value="m">{{ m }}</option>
+            <AppSelect v-model="basics.motivation" placeholder="Selecione">
+              <option v-for="m in MOTIVATIONS" :key="m" :value="m">{{ m }}</option>
             </AppSelect>
           </div>
 
-          <div v-if="basicos.tipoOcorrencia === 'administrativa'" class="space-y-1.5">
+          <div v-if="basics.occurrenceType === 'administrativa'" class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Relacionado a Operação Policial?</AppLabel>
-            <AppSelect v-model="basicos.operacaoPolicial" placeholder="Selecione">
+            <AppSelect v-model="basics.policeOperation" placeholder="Selecione">
               <option value="sim">Sim</option>
               <option value="nao">Não</option>
             </AppSelect>
           </div>
 
-          <div v-if="basicos.tipoOcorrencia === 'administrativa' && basicos.operacaoPolicial === 'sim'" class="space-y-1.5">
+          <div v-if="basics.occurrenceType === 'administrativa' && basics.policeOperation === 'sim'" class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Nome da Operação</AppLabel>
-            <AppInput v-model="basicos.nomeOperacao" placeholder="Informe o nome da operação" />
+            <AppInput v-model="basics.operationName" placeholder="Informe o nome da operação" />
           </div>
 
-          <div v-if="basicos.tipoOcorrencia === 'administrativa'" class="space-y-1.5">
+          <div v-if="basics.occurrenceType === 'administrativa'" class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Relacionado a Evento?</AppLabel>
-            <AppSelect v-model="basicos.evento" placeholder="Selecione">
+            <AppSelect v-model="basics.event" placeholder="Selecione">
               <option value="sim">Sim</option>
               <option value="nao">Não</option>
             </AppSelect>
           </div>
 
-          <div v-if="basicos.tipoOcorrencia === 'administrativa' && basicos.evento === 'sim'" class="space-y-1.5">
+          <div v-if="basics.occurrenceType === 'administrativa' && basics.event === 'sim'" class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Nome do Evento</AppLabel>
-            <AppInput v-model="basicos.nomeEvento" placeholder="Informe o nome do evento" />
+            <AppInput v-model="basics.eventName" placeholder="Informe o nome do evento" />
           </div>
         </div>
       </section>
@@ -180,24 +180,24 @@ function removeDenuncia(id: string) {
           <p class="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Natureza <span class="text-destructive">*</span>
           </p>
-          <AppButton type="button" variant="outline" size="sm" @click="addNatureza">
+          <AppButton type="button" variant="outline" size="sm" @click="addNature">
             <Plus class="h-3.5 w-3.5" /> Adicionar
           </AppButton>
         </div>
 
         <div class="space-y-1.5">
           <AppLabel class="text-xs text-muted-foreground">Flagrante? <span class="text-destructive">*</span></AppLabel>
-          <AppRadioGroup v-model="basicos.flagrante" name="flagrante" :options="FLAGRANTE_OPTIONS" />
+          <AppRadioGroup v-model="basics.inFlagrante" name="inFlagrante" :options="IN_FLAGRANTE_OPTIONS" />
         </div>
 
-        <p v-if="basicos.naturezas.length === 0" class="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
+        <p v-if="basics.natures.length === 0" class="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
           Nenhuma natureza informada. Ao menos uma é obrigatória.
         </p>
 
-        <div v-for="nat in basicos.naturezas" :key="nat.id" class="relative rounded-lg border bg-muted/20 p-4">
+        <div v-for="nature in basics.natures" :key="nature.id" class="relative rounded-lg border bg-muted/20 p-4">
           <button
             type="button"
-            @click="removeNatureza(nat.id)"
+            @click="removeNature(nature.id)"
             class="absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
             aria-label="Remover"
           >
@@ -207,11 +207,11 @@ function removeDenuncia(id: string) {
           <div class="grid grid-cols-1 gap-4 pr-8 sm:grid-cols-2">
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Nome da Natureza</AppLabel>
-              <AppInput v-model="nat.nome" placeholder="Ex: Furto, Roubo, Lesão Corporal..." />
+              <AppInput v-model="nature.name" placeholder="Ex: Furto, Roubo, Lesão Corporal..." />
             </div>
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">&nbsp;</AppLabel>
-              <AppCheckbox v-model="nat.tentada">Tentada</AppCheckbox>
+              <AppCheckbox v-model="nature.attempted">Tentada</AppCheckbox>
             </div>
           </div>
         </div>
@@ -226,46 +226,46 @@ function removeDenuncia(id: string) {
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">País</AppLabel>
-            <AppInput v-model="basicos.pais" placeholder="Brasil" />
+            <AppInput v-model="basics.country" placeholder="Brasil" />
           </div>
 
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Estado</AppLabel>
-            <AppSelect v-model="basicos.estado" placeholder="UF">
-              <option v-for="uf in ESTADOS_BR" :key="uf" :value="uf">{{ uf }}</option>
+            <AppSelect v-model="basics.state" placeholder="UF">
+              <option v-for="uf in BRAZIL_STATES" :key="uf" :value="uf">{{ uf }}</option>
             </AppSelect>
           </div>
 
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Cidade / RA</AppLabel>
-            <AppInput v-model="basicos.cidadeRA" placeholder="Cidade ou Região Administrativa" />
+            <AppInput v-model="basics.cityDistrict" placeholder="Cidade ou Região Administrativa" />
           </div>
 
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Quadra</AppLabel>
-            <AppInput v-model="basicos.quadra" placeholder="Ex: Quadra 3, Bloco A" />
+            <AppInput v-model="basics.block" placeholder="Ex: Quadra 3, Bloco A" />
           </div>
 
           <div class="space-y-1.5 sm:col-span-2">
             <AppLabel class="text-xs text-muted-foreground">Logradouro <span class="text-destructive">*</span></AppLabel>
-            <AppInput v-model="basicos.logradouro" placeholder="Rua, Avenida, SQN..." />
+            <AppInput v-model="basics.street" placeholder="Rua, Avenida, SQN..." />
           </div>
 
           <div class="space-y-1.5">
             <AppLabel class="text-xs text-muted-foreground">Via</AppLabel>
-            <AppInput v-model="basicos.via" placeholder="Nº / KM / Via" />
+            <AppInput v-model="basics.streetNumber" placeholder="Nº / KM / Via" />
           </div>
 
           <div class="space-y-1.5 sm:col-span-2">
             <AppLabel class="text-xs text-muted-foreground">Complemento</AppLabel>
-            <AppInput v-model="basicos.complemento" placeholder="Apartamento, bloco, ponto de referência..." />
+            <AppInput v-model="basics.complement" placeholder="Apartamento, bloco, ponto de referência..." />
           </div>
 
           <div class="space-y-1.5 sm:col-span-3">
             <AppLabel class="text-xs text-muted-foreground">Coordenadas</AppLabel>
             <div class="flex gap-2">
               <AppInput
-                v-model="basicos.coordenadas"
+                v-model="basics.coordinates"
                 placeholder="-15.7801, -47.9292"
                 class="flex-1"
               />
@@ -273,8 +273,8 @@ function removeDenuncia(id: string) {
                 type="button"
                 variant="outline"
                 size="default"
-                :disabled="!basicos.coordenadas"
-                @click="verNoMapa"
+                :disabled="!basics.coordinates"
+                @click="viewOnMap"
                 class="shrink-0"
               >
                 <MapPin class="h-4 w-4" /> Ver no mapa
@@ -290,19 +290,19 @@ function removeDenuncia(id: string) {
           <p class="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Unidade Móvel de Atendimento à Ocorrência
           </p>
-          <AppButton type="button" variant="outline" size="sm" @click="addUnidadeMovel">
+          <AppButton type="button" variant="outline" size="sm" @click="addMobileUnit">
             <Plus class="h-3.5 w-3.5" /> Adicionar
           </AppButton>
         </div>
 
-        <p v-if="basicos.unidadesMoveis.length === 0" class="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
+        <p v-if="basics.mobileUnits.length === 0" class="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
           Nenhuma unidade móvel vinculada.
         </p>
 
-        <div v-for="um in basicos.unidadesMoveis" :key="um.id" class="relative rounded-lg border bg-muted/20 p-4">
+        <div v-for="unit in basics.mobileUnits" :key="unit.id" class="relative rounded-lg border bg-muted/20 p-4">
           <button
             type="button"
-            @click="removeUnidadeMovel(um.id)"
+            @click="removeMobileUnit(unit.id)"
             class="absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
             aria-label="Remover"
           >
@@ -312,27 +312,27 @@ function removeDenuncia(id: string) {
           <div class="grid grid-cols-1 gap-4 pr-8 sm:grid-cols-2 md:grid-cols-3">
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Órgão</AppLabel>
-              <AppInput v-model="um.orgao" placeholder="Ex: PMDF, PCDF" />
+              <AppInput v-model="unit.agency" placeholder="Ex: PMDF, PCDF" />
             </div>
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Unidade</AppLabel>
-              <AppInput v-model="um.unidade" placeholder="Ex: 1ª CIPM" />
+              <AppInput v-model="unit.unit" placeholder="Ex: 1ª CIPM" />
             </div>
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Prefixo / Viatura</AppLabel>
-              <AppInput v-model="um.prefixoViatura" placeholder="Ex: Alfa-01" />
+              <AppInput v-model="unit.vehiclePrefix" placeholder="Ex: Alfa-01" />
             </div>
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Matrícula</AppLabel>
-              <AppInput v-model="um.matricula" placeholder="Matrícula do agente" />
+              <AppInput v-model="unit.badgeNumber" placeholder="Matrícula do agente" />
             </div>
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Nome</AppLabel>
-              <AppInput v-model="um.nome" placeholder="Nome do agente" />
+              <AppInput v-model="unit.name" placeholder="Nome do agente" />
             </div>
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Nº da Ocorrência</AppLabel>
-              <AppInput v-model="um.numOcorrencia" placeholder="Nº da ocorrência do órgão" />
+              <AppInput v-model="unit.occurrenceNumber" placeholder="Nº da ocorrência do órgão" />
             </div>
           </div>
         </div>
@@ -344,19 +344,19 @@ function removeDenuncia(id: string) {
           <p class="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Denúncia Vinculada
           </p>
-          <AppButton type="button" variant="outline" size="sm" @click="addDenuncia">
+          <AppButton type="button" variant="outline" size="sm" @click="addLinkedReport">
             <Plus class="h-3.5 w-3.5" /> Adicionar
           </AppButton>
         </div>
 
-        <p v-if="basicos.denuncias.length === 0" class="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
+        <p v-if="basics.linkedReports.length === 0" class="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
           Nenhuma denúncia vinculada.
         </p>
 
-        <div v-for="den in basicos.denuncias" :key="den.id" class="relative rounded-lg border bg-muted/20 p-4">
+        <div v-for="report in basics.linkedReports" :key="report.id" class="relative rounded-lg border bg-muted/20 p-4">
           <button
             type="button"
-            @click="removeDenuncia(den.id)"
+            @click="removeLinkedReport(report.id)"
             class="absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
             aria-label="Remover"
           >
@@ -366,15 +366,15 @@ function removeDenuncia(id: string) {
           <div class="grid grid-cols-1 gap-4 pr-8 sm:grid-cols-3">
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Número</AppLabel>
-              <AppInput v-model="den.numero" placeholder="Nº da denúncia" />
+              <AppInput v-model="report.number" placeholder="Nº da denúncia" />
             </div>
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Ano</AppLabel>
-              <AppInput v-model="den.ano" placeholder="Ex: 2026" maxlength="4" />
+              <AppInput v-model="report.year" placeholder="Ex: 2026" maxlength="4" />
             </div>
             <div class="space-y-1.5">
               <AppLabel class="text-xs text-muted-foreground">Órgão Gerador</AppLabel>
-              <AppInput v-model="den.orgaoGerador" placeholder="Ex: Disque-Denúncia" />
+              <AppInput v-model="report.issuingAgency" placeholder="Ex: Disque-Denúncia" />
             </div>
           </div>
         </div>

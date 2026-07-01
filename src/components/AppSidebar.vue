@@ -17,9 +17,9 @@ const menuItems = [
 ]
 
 const userInfo = {
-  nome: 'Agt. Ítalo Santos',
-  matricula: 'Matrícula 230.730-8',
-  unidade: 'DGI',
+  name: 'Agt. Ítalo Santos',
+  badgeNumber: 'Matrícula 230.730-8',
+  unit: 'DGI',
 }
 </script>
 
@@ -53,12 +53,12 @@ const userInfo = {
           <div
             class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sidebar-accent text-sm font-semibold text-sidebar-accent-foreground"
           >
-            {{ initials(userInfo.nome) }}
+            {{ initials(userInfo.name) }}
           </div>
           <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-semibold">{{ userInfo.nome }}</p>
-            <p class="truncate text-xs text-sidebar-foreground/70">{{ userInfo.matricula }}</p>
-            <p class="truncate text-xs text-sidebar-foreground/70">{{ userInfo.unidade }}</p>
+            <p class="truncate text-sm font-semibold">{{ userInfo.name }}</p>
+            <p class="truncate text-xs text-sidebar-foreground/70">{{ userInfo.badgeNumber }}</p>
+            <p class="truncate text-xs text-sidebar-foreground/70">{{ userInfo.unit }}</p>
           </div>
           <!-- Close button (mobile only) -->
           <button

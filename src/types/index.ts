@@ -1,4 +1,4 @@
-export type StepId = 'basicos' | 'pessoas' | 'objetos' | 'historico' | 'anexos'
+export type StepId = 'basics' | 'people' | 'items' | 'history' | 'attachments'
 export type Status = 'pending' | 'partial' | 'complete'
 
 export interface StepDef {
@@ -7,86 +7,86 @@ export interface StepDef {
   description: string
 }
 
-export interface Natureza {
+export interface Nature {
   id: string
-  nome: string
-  tentada: boolean
+  name: string
+  attempted: boolean
 }
 
-export interface UnidadeMovel {
+export interface MobileUnit {
   id: string
-  orgao: string
-  unidade: string
-  prefixoViatura: string
-  matricula: string
-  nome: string
-  numOcorrencia: string
+  agency: string
+  unit: string
+  vehiclePrefix: string
+  badgeNumber: string
+  name: string
+  occurrenceNumber: string
 }
 
-export interface DenunciaVinculada {
+export interface LinkedReport {
   id: string
-  numero: string
-  ano: string
-  orgaoGerador: string
+  number: string
+  year: string
+  issuingAgency: string
 }
 
-export interface Pessoa {
+export interface Person {
   id: string
-  nome: string
-  tipo: string
-  documento: string
+  name: string
+  type: string
+  document: string
 }
 
-export interface Objeto {
+export interface Item {
   id: string
-  categoria: string
-  descricao: string
-  placa: string
+  category: string
+  description: string
+  licensePlate: string
 }
 
-export interface Anexo {
+export interface Attachment {
   id: string
-  nome: string
-  tipo: string
+  name: string
+  type: string
 }
 
 export interface FormState {
-  basicos: {
-    tipoOcorrencia: string
-    classificacao: string
-    unidadeRegistro: string
-    unidadeApuracao: string
-    flagrante: string
-    origemComunicacao: string
-    dataComunicacao: string
-    periodoInicio: string
-    periodoFim: string
-    motivacao: string
-    operacaoPolicial: string
-    nomeOperacao: string
-    evento: string
-    nomeEvento: string
-    pais: string
-    estado: string
-    cidadeRA: string
-    quadra: string
-    logradouro: string
-    via: string
-    complemento: string
-    coordenadas: string
-    naturezas: Natureza[]
-    unidadesMoveis: UnidadeMovel[]
-    denuncias: DenunciaVinculada[]
+  basics: {
+    occurrenceType: string
+    classification: string
+    registrationUnit: string
+    investigationUnit: string
+    inFlagrante: string
+    reportSource: string
+    reportDate: string
+    periodStart: string
+    periodEnd: string
+    motivation: string
+    policeOperation: string
+    operationName: string
+    event: string
+    eventName: string
+    country: string
+    state: string
+    cityDistrict: string
+    block: string
+    street: string
+    streetNumber: string
+    complement: string
+    coordinates: string
+    natures: Nature[]
+    mobileUnits: MobileUnit[]
+    linkedReports: LinkedReport[]
   }
-  pessoas: Pessoa[]
-  objetos: Objeto[]
-  historico: string
-  anexos: Anexo[]
+  people: Person[]
+  items: Item[]
+  history: string
+  attachments: Attachment[]
 }
 
-export interface Participante {
+export interface Participant {
   id: string
-  nome: string
-  papel: string
-  em: string
+  name: string
+  role: string
+  at: string
 }

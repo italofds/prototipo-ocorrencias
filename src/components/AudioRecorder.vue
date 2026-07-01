@@ -11,7 +11,7 @@ type RecState = 'idle' | 'recording' | 'recorded'
 const recState = ref<RecState>('idle')
 const recSeconds = ref(0)
 const audioUrl = ref<string | null>(null)
-const audioProtocolado = ref(false)
+const audioFiled = ref(false)
 
 const recorderRef = ref<MediaRecorder | null>(null)
 const chunksRef = ref<Blob[]>([])
@@ -37,14 +37,14 @@ async function startRecording() {
     recorderRef.value = rec
     rec.start()
     recSeconds.value = 0
-    audioProtocolado.value = false
+    audioFiled.value = false
     audioUrl.value = null
     recState.value = 'recording'
     tickRef.value = window.setInterval(() => recSeconds.value++, 1000)
   } catch {
     recState.value = 'recording'
     recSeconds.value = 0
-    audioProtocolado.value = false
+    audioFiled.value = false
     audioUrl.value = null
     tickRef.value = window.setInterval(() => recSeconds.value++, 1000)
   }
@@ -66,7 +66,7 @@ function stopRecording() {
 function discardRecording() {
   if (audioUrl.value) URL.revokeObjectURL(audioUrl.value)
   audioUrl.value = null
-  audioProtocolado.value = false
+  audioFiled.value = false
   recState.value = 'idle'
   recSeconds.value = 0
 }
@@ -130,11 +130,11 @@ onUnmounted(() => {
           <AppButton
             variant="outline"
             size="sm"
-            @click="audioProtocolado = true"
-            :disabled="audioProtocolado"
+            @click="audioFiled = true"
+            :disabled="audioFiled"
           >
             <FileSignature class="h-4 w-4" />
-            {{ audioProtocolado ? 'Áudio protocolado' : 'Protocolar áudio' }}
+            {{ audioFiled ? 'Áudio protocolado' : 'Protocolar áudio' }}
           </AppButton>
           <AppButton size="sm" @click="emit('autoFill')">
             <Sparkles class="h-4 w-4" /> Auto-preencher ocorrência
@@ -146,7 +146,7 @@ onUnmounted(() => {
     <audio v-if="audioUrl" :src="audioUrl" controls class="mt-4 w-full" />
 
     <p
-      v-if="audioProtocolado"
+      v-if="audioFiled"
       class="mt-3 inline-flex items-center gap-2 rounded-md bg-complete-soft px-3 py-1.5 text-xs font-medium text-complete"
     >
       <Check class="h-3.5 w-3.5" :stroke-width="3" />

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Objeto } from '@/types'
+import type { Item } from '@/types'
 import AppInput from '@/components/ui/Input.vue'
 import AppSelect from '@/components/ui/Select.vue'
 import AppLabel from '@/components/ui/Label.vue'
@@ -7,28 +7,28 @@ import AppTextarea from '@/components/ui/Textarea.vue'
 import AppButton from '@/components/ui/Button.vue'
 import { Car, Trash2, Plus } from 'lucide-vue-next'
 
-const objetos = defineModel<Objeto[]>({ required: true })
+const items = defineModel<Item[]>({ required: true })
 
 function add() {
-  objetos.value = [
-    ...objetos.value,
-    { id: crypto.randomUUID(), categoria: '', descricao: '', placa: '' },
+  items.value = [
+    ...items.value,
+    { id: crypto.randomUUID(), category: '', description: '', licensePlate: '' },
   ]
 }
 
-function updateField(id: string, k: keyof Objeto, v: string) {
-  objetos.value = objetos.value.map((o) => (o.id === id ? { ...o, [k]: v } : o))
+function updateField(id: string, k: keyof Item, v: string) {
+  items.value = items.value.map((o) => (o.id === id ? { ...o, [k]: v } : o))
 }
 
 function remove(id: string) {
-  objetos.value = objetos.value.filter((o) => o.id !== id)
+  items.value = items.value.filter((o) => o.id !== id)
 }
 </script>
 
 <template>
   <div class="space-y-4">
     <div
-      v-if="objetos.length === 0"
+      v-if="items.length === 0"
       class="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8 text-center"
     >
       <div class="grid h-10 w-10 place-items-center rounded-full bg-muted text-muted-foreground">
@@ -41,7 +41,7 @@ function remove(id: string) {
     </div>
 
     <div
-      v-for="(o, i) in objetos"
+      v-for="(o, i) in items"
       :key="o.id"
       class="rounded-lg border bg-muted/20 p-4"
     >
@@ -58,8 +58,8 @@ function remove(id: string) {
         <div class="space-y-2">
           <AppLabel class="text-xs font-medium text-muted-foreground">Categoria</AppLabel>
           <AppSelect
-            :model-value="o.categoria"
-            @update:model-value="(v) => updateField(o.id, 'categoria', v ?? '')"
+            :model-value="o.category"
+            @update:model-value="(v) => updateField(o.id, 'category', v ?? '')"
             placeholder="Selecione"
           >
             <option value="veiculo">Veículo</option>
@@ -74,8 +74,8 @@ function remove(id: string) {
           <AppLabel class="text-xs font-medium text-muted-foreground">Placa (se veículo)</AppLabel>
           <AppInput
             placeholder="ABC-1D23"
-            :model-value="o.placa"
-            @update:model-value="(v) => updateField(o.id, 'placa', v ?? '')"
+            :model-value="o.licensePlate"
+            @update:model-value="(v) => updateField(o.id, 'licensePlate', v ?? '')"
           />
         </div>
 
@@ -84,8 +84,8 @@ function remove(id: string) {
           <AppTextarea
             :rows="3"
             placeholder="Marca, modelo, cor, características, número de série..."
-            :model-value="o.descricao"
-            @update:model-value="(v) => updateField(o.id, 'descricao', v ?? '')"
+            :model-value="o.description"
+            @update:model-value="(v) => updateField(o.id, 'description', v ?? '')"
           />
         </div>
       </div>

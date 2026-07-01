@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import type { Pessoa } from '@/types'
+import type { Person } from '@/types'
 import AppInput from '@/components/ui/Input.vue'
 import AppSelect from '@/components/ui/Select.vue'
 import AppLabel from '@/components/ui/Label.vue'
 import AppButton from '@/components/ui/Button.vue'
 import { Users, Trash2, Plus } from 'lucide-vue-next'
 
-const pessoas = defineModel<Pessoa[]>({ required: true })
+const people = defineModel<Person[]>({ required: true })
 
 function add() {
-  pessoas.value = [
-    ...pessoas.value,
-    { id: crypto.randomUUID(), nome: '', tipo: '', documento: '' },
+  people.value = [
+    ...people.value,
+    { id: crypto.randomUUID(), name: '', type: '', document: '' },
   ]
 }
 
-function updateField(id: string, k: keyof Pessoa, v: string) {
-  pessoas.value = pessoas.value.map((p) => (p.id === id ? { ...p, [k]: v } : p))
+function updateField(id: string, k: keyof Person, v: string) {
+  people.value = people.value.map((p) => (p.id === id ? { ...p, [k]: v } : p))
 }
 
 function remove(id: string) {
-  pessoas.value = pessoas.value.filter((p) => p.id !== id)
+  people.value = people.value.filter((p) => p.id !== id)
 }
 </script>
 
 <template>
   <div class="space-y-4">
     <div
-      v-if="pessoas.length === 0"
+      v-if="people.length === 0"
       class="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8 text-center"
     >
       <div class="grid h-10 w-10 place-items-center rounded-full bg-muted text-muted-foreground">
@@ -40,7 +40,7 @@ function remove(id: string) {
     </div>
 
     <div
-      v-for="(p, i) in pessoas"
+      v-for="(p, i) in people"
       :key="p.id"
       class="rounded-lg border bg-muted/20 p-4"
     >
@@ -57,8 +57,8 @@ function remove(id: string) {
         <div class="space-y-2 md:col-span-2">
           <AppLabel class="text-xs font-medium text-muted-foreground">Nome completo</AppLabel>
           <AppInput
-            :model-value="p.nome"
-            @update:model-value="(v) => updateField(p.id, 'nome', v ?? '')"
+            :model-value="p.name"
+            @update:model-value="(v) => updateField(p.id, 'name', v ?? '')"
           />
         </div>
 
@@ -67,8 +67,8 @@ function remove(id: string) {
             >Tipo de envolvimento</AppLabel
           >
           <AppSelect
-            :model-value="p.tipo"
-            @update:model-value="(v) => updateField(p.id, 'tipo', v ?? '')"
+            :model-value="p.type"
+            @update:model-value="(v) => updateField(p.id, 'type', v ?? '')"
             placeholder="Selecione"
           >
             <option value="vitima">Vítima</option>
@@ -82,8 +82,8 @@ function remove(id: string) {
           <AppLabel class="text-xs font-medium text-muted-foreground">CPF / RG</AppLabel>
           <AppInput
             placeholder="000.000.000-00"
-            :model-value="p.documento"
-            @update:model-value="(v) => updateField(p.id, 'documento', v ?? '')"
+            :model-value="p.document"
+            @update:model-value="(v) => updateField(p.id, 'document', v ?? '')"
           />
         </div>
       </div>

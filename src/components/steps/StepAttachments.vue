@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import type { Anexo } from '@/types'
+import type { Attachment } from '@/types'
 import AppButton from '@/components/ui/Button.vue'
 import { Upload, Paperclip, Trash2 } from 'lucide-vue-next'
 
-const anexos = defineModel<Anexo[]>({ required: true })
+const attachments = defineModel<Attachment[]>({ required: true })
 
-const categorias = [
-  { tipo: 'Foto', label: 'Foto / imagem' },
-  { tipo: 'Documento', label: 'Documento' },
-  { tipo: 'Laudo', label: 'Laudo / perícia' },
+const categories = [
+  { type: 'Foto', label: 'Foto / imagem' },
+  { type: 'Documento', label: 'Documento' },
+  { type: 'Laudo', label: 'Laudo / perícia' },
 ]
 
-function add(tipo: string) {
-  anexos.value = [
-    ...anexos.value,
-    { id: crypto.randomUUID(), nome: `arquivo-${anexos.value.length + 1}.pdf`, tipo },
+function add(type: string) {
+  attachments.value = [
+    ...attachments.value,
+    { id: crypto.randomUUID(), name: `arquivo-${attachments.value.length + 1}.pdf`, type },
   ]
 }
 
 function remove(id: string) {
-  anexos.value = anexos.value.filter((a) => a.id !== id)
+  attachments.value = attachments.value.filter((a) => a.id !== id)
 }
 </script>
 
@@ -27,10 +27,10 @@ function remove(id: string) {
   <div class="space-y-5">
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
       <button
-        v-for="c in categorias"
-        :key="c.tipo"
+        v-for="c in categories"
+        :key="c.type"
         type="button"
-        @click="add(c.tipo)"
+        @click="add(c.type)"
         class="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-6 text-center transition-colors hover:border-foreground/30 hover:bg-accent/30"
       >
         <div
@@ -43,9 +43,9 @@ function remove(id: string) {
       </button>
     </div>
 
-    <div v-if="anexos.length > 0" class="divide-y rounded-lg border">
+    <div v-if="attachments.length > 0" class="divide-y rounded-lg border">
       <div
-        v-for="a in anexos"
+        v-for="a in attachments"
         :key="a.id"
         class="flex items-center justify-between gap-4 p-3"
       >
@@ -56,8 +56,8 @@ function remove(id: string) {
             <Paperclip class="h-4 w-4" />
           </div>
           <div>
-            <p class="text-sm font-medium">{{ a.nome }}</p>
-            <p class="text-xs text-muted-foreground">{{ a.tipo }}</p>
+            <p class="text-sm font-medium">{{ a.name }}</p>
+            <p class="text-xs text-muted-foreground">{{ a.type }}</p>
           </div>
         </div>
         <AppButton variant="ghost" size="sm" @click="remove(a.id)">

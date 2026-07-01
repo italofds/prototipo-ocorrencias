@@ -2,7 +2,7 @@
 import AppTextarea from '@/components/ui/Textarea.vue'
 import AppLabel from '@/components/ui/Label.vue'
 
-const historico = defineModel<string>({ required: true })
+const history = defineModel<string>({ required: true })
 </script>
 
 <template>
@@ -12,11 +12,11 @@ const historico = defineModel<string>({ required: true })
       <AppTextarea
         :rows="14"
         placeholder="Descreva detalhadamente o ocorrido: dinâmica do fato, local, horário, ações dos envolvidos, providências adotadas..."
-        v-model="historico"
+        v-model="history"
       />
     </div>
     <p class="text-xs text-muted-foreground">
-      {{ historico.trim().length }} caracteres — mínimo recomendado: 30
+      {{ history.trim().length }} caracteres — mínimo recomendado: 30
     </p>
   </div>
 </template>
