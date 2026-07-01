@@ -29,7 +29,7 @@ export function stepProgress(id: StepId, data: FormState): number {
       b.occurrenceType, b.classification, b.investigationUnit,
       b.inFlagrante, b.periodStart, b.periodEnd, b.street,
     ]
-    if (b.occurrenceType === 'administrativa') required.push(b.motivation)
+    if (b.occurrenceType === 'criminal') required.push(b.motivation)
     const filled = required.filter((v) => v.trim().length > 0).length
     const natureOk = b.natures.length > 0 && b.natures.every((n) => n.name.trim().length > 0) ? 1 : 0
     return (filled + natureOk) / (required.length + 1)

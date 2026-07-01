@@ -62,9 +62,9 @@ export interface FormState {
     periodStart: string
     periodEnd: string
     motivation: string
-    policeOperation: string
+    policeOperation: boolean
     operationName: string
-    event: string
+    event: boolean
     eventName: string
     country: string
     state: string

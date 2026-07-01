@@ -60,13 +60,16 @@ const INITIAL_PARTICIPANTS: Participant[] = [
 ]
 
 // ── State ──────────────────────────────────────────────────────────────────────
+const USER_LOTATION_UNIT = 'DGI'
+
 const data = reactive<FormState>({
   basics: {
-    occurrenceType: '', classification: 'comum', registrationUnit: 'DGI', investigationUnit: '',
-    inFlagrante: '', reportSource: '', reportDate: nowDateTimeLocal(), periodStart: '', periodEnd: '',
-    motivation: '', policeOperation: '', operationName: '', event: '', eventName: '',
-    country: 'Brasil', state: '', cityDistrict: '', block: '', street: '', streetNumber: '', complement: '',
-    coordinates: '', natures: [], mobileUnits: [], linkedReports: [],
+    occurrenceType: '', classification: 'comum', registrationUnit: USER_LOTATION_UNIT,
+    investigationUnit: USER_LOTATION_UNIT,
+    inFlagrante: '', reportSource: 'presencial', reportDate: nowDateTimeLocal(), periodStart: '', periodEnd: '',
+    motivation: '', policeOperation: false, operationName: '', event: false, eventName: '',
+    country: 'Brasil', state: 'DF', cityDistrict: '', block: '', street: '', streetNumber: '', complement: '',
+    coordinates: '-15.7801, -47.9292', natures: [], mobileUnits: [], linkedReports: [],
   },
   people: [],
   items: [],
@@ -113,7 +116,7 @@ function handleAutoFill() {
   if (!data.basics.reportSource) data.basics.reportSource = 'telefone190'
   if (!data.basics.periodStart) data.basics.periodStart = '2026-06-22T13:50'
   if (!data.basics.periodEnd) data.basics.periodEnd = '2026-06-22T14:30'
-  if (data.basics.occurrenceType === 'administrativa' && !data.basics.motivation)
+  if (data.basics.occurrenceType === 'criminal' && !data.basics.motivation)
     data.basics.motivation = 'Patrimonial'
   if (data.basics.natures.length === 0)
     data.basics.natures.push({ id: uid(), name: 'Furto', attempted: false })
