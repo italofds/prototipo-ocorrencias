@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils'
 
 defineProps<{
-  options: { value: string; label: string }[]
+  options: { value: string; label: string; description?: string }[]
   name: string
   fullWidth?: boolean
 }>()
@@ -17,22 +17,28 @@ const model = defineModel<string>()
       :key="opt.value"
       :class="
         cn(
-          'flex min-w-[8.5rem] cursor-pointer select-none items-center gap-2.5 rounded-lg border-2 px-4 py-3 text-sm transition-colors',
+          'flex cursor-pointer select-none gap-2.5 rounded-md border px-4 py-2.5 text-sm transition-colors',
+          opt.description ? 'flex-col items-start' : 'min-w-[8.5rem] items-center',
           fullWidth ? 'flex-1 basis-0' : 'flex-1 sm:flex-none',
           model === opt.value
             ? 'border-primary bg-primary/10 font-medium text-foreground'
-            : 'border-input text-muted-foreground hover:border-primary/40 hover:bg-accent/30',
+            : 'border-transparent bg-muted text-foreground hover:bg-accent hover:text-accent-foreground',
         )
       "
     >
-      <input
-        type="radio"
-        :name="name"
-        :value="opt.value"
-        v-model="model"
-        class="h-5 w-5 shrink-0 accent-primary"
-      />
-      {{ opt.label }}
+      <span class="flex items-center gap-2.5">
+        <input
+          type="radio"
+          :name="name"
+          :value="opt.value"
+          v-model="model"
+          class="h-5 w-5 shrink-0 accent-primary"
+        />
+        {{ opt.label }}
+      </span>
+      <p v-if="opt.description" class="pl-[1.875rem] text-xs font-normal text-muted-foreground">
+        {{ opt.description }}
+      </p>
     </label>
   </div>
 </template>

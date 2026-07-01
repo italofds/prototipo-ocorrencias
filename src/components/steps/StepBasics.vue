@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Plus, X, MapPin } from 'lucide-vue-next'
+import { Plus, X, MapPin, FileText } from 'lucide-vue-next'
 import type { FormState, Nature, MobileUnit, LinkedReport } from '@/types'
 import { uid } from '@/lib/utils'
 import AppInput from '@/components/ui/Input.vue'
@@ -18,8 +18,16 @@ const BRAZIL_STATES = [
 ]
 
 const OCCURRENCE_TYPE_OPTIONS = [
-  { value: 'criminal', label: 'Criminal' },
-  { value: 'administrativa', label: 'Administrativa' },
+  {
+    value: 'criminal',
+    label: 'Criminal',
+    description: 'Fatos que configuram crime ou contravenção penal, sujeitos a apuração criminal.',
+  },
+  {
+    value: 'administrativa',
+    label: 'Administrativo',
+    description: 'Registros de natureza administrativa, sem caracterização de ilícito penal.',
+  },
 ]
 
 const CLASSIFICATION_OPTIONS = [
@@ -75,20 +83,23 @@ function removeLinkedReport(id: string) {
   <div class="space-y-8">
 
     <!-- ── TIPO DE OCORRÊNCIA ──────────────────────────────────── -->
-    <section class="space-y-3 rounded-lg border-2 border-primary/40 bg-primary/5 p-4">
-      <div class="space-y-1">
-        <AppLabel class="text-sm font-semibold text-foreground">
-          Tipo de Ocorrência <span class="text-destructive">*</span>
-        </AppLabel>
-        <p class="text-xs text-muted-foreground">
-          Selecione o tipo de ocorrência para continuar o preenchimento do formulário.
-        </p>
+    <section class="flex flex-col items-center gap-2 rounded-lg border border-dashed p-8 text-center">
+      <div class="grid h-10 w-10 place-items-center rounded-full bg-muted text-muted-foreground">
+        <FileText class="h-5 w-5" />
       </div>
+      <p class="text-sm font-medium">
+        Tipo de Ocorrência <span class="text-destructive">*</span>
+      </p>
+      <p class="max-w-md text-xs text-muted-foreground">
+        Selecione o tipo de ocorrência para continuar o preenchimento do formulário.
+      </p>
+
       <AppRadioGroup
         v-model="basics.occurrenceType"
         name="occurrenceType"
         :options="OCCURRENCE_TYPE_OPTIONS"
         full-width
+        class="w-full max-w-xl pt-2 text-left"
       />
     </section>
 
@@ -183,12 +194,7 @@ function removeLinkedReport(id: string) {
           <AppButton type="button" variant="outline" size="sm" @click="addNature">
             <Plus class="h-3.5 w-3.5" /> Adicionar
           </AppButton>
-        </div>
-
-        <div class="space-y-1.5">
-          <AppLabel class="text-xs text-muted-foreground">Flagrante? <span class="text-destructive">*</span></AppLabel>
-          <AppRadioGroup v-model="basics.inFlagrante" name="inFlagrante" :options="IN_FLAGRANTE_OPTIONS" />
-        </div>
+        </div>        
 
         <p v-if="basics.natures.length === 0" class="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
           Nenhuma natureza informada. Ao menos uma é obrigatória.
@@ -214,6 +220,11 @@ function removeLinkedReport(id: string) {
               <AppCheckbox v-model="nature.attempted">Tentada</AppCheckbox>
             </div>
           </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <AppLabel class="text-xs text-muted-foreground">Flagrante? <span class="text-destructive">*</span></AppLabel>
+          <AppRadioGroup v-model="basics.inFlagrante" name="inFlagrante" :options="IN_FLAGRANTE_OPTIONS" />
         </div>
       </section>
 

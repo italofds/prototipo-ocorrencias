@@ -12,10 +12,10 @@ const attrs = useAttrs()
   <label
     :class="
       cn(
-        'flex min-h-11 w-fit cursor-pointer select-none items-center gap-2.5 rounded-lg border-2 px-4 py-2.5 text-sm transition-colors',
+        'flex min-h-11 w-fit cursor-pointer select-none items-center gap-2.5 rounded-md border px-4 py-2.5 text-sm transition-colors',
         model
           ? 'border-primary bg-primary/10 font-medium text-foreground'
-          : 'border-input text-muted-foreground hover:border-primary/40 hover:bg-accent/30',
+          : 'border-transparent bg-muted text-foreground hover:bg-accent hover:text-accent-foreground',
       )
     "
   >
