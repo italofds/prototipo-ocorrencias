@@ -26,7 +26,10 @@ Protótipo apenas de front-end (sem backend) de um sistema de registro de ocorr�
 Policiais") da Polícia Civil do Distrito Federal (PCDF). Todos os dados exibidos (números de protocolo,
 participantes, homologação) são mockados dentro dos próprios componentes; não há persistência nem camada de
 API. Os textos de UI e os campos de domínio estão em português (pt-BR) — mantenha os novos textos de UI
-consistentes com isso.
+consistentes com isso. Todo o layoyut do sistema deverá ser acessível em Desktop e também celular,
+sempre levando em consideração as melhores práticas de UI. Se for solicitado alguma alteração de layout que
+contrarie as melhores práticas de UI, ou que resulte em alguma mudança estética que possivelmente não fique 
+agradável, questione antes de confirmar e executar as alterações.
 
 ## Comandos
 
